@@ -1,11 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(private prisma: PrismaService) {}
+  async register(createAuthDto: CreateAuthDto) {
+    const { password, email } = createAuthDto;
+
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('Email already exists!');
+    }
+
+    const hashedPassword = bcrypt.hashSync(password, Number('10'));
+
+    return this.prisma.user.create({
+      data: {
+        ...createAuthDto,
+        password: hashedPassword,
+      },
+      select: {
+        username: true,
+        image: true,
+        email: true,
+        role: true,
+      },
+    });
   }
 
   findAll() {
