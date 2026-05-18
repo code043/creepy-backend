@@ -31,7 +31,15 @@ export class PostsService {
     return post;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async remove(id: string) {
+    const post = await this.prisma.post.findFirst({
+      where: { id },
+    });
+    if (!post) {
+      throw new NotFoundException('Note not found!');
+    }
+    await this.prisma.post.delete({
+      where: { id },
+    });
   }
 }
