@@ -1,12 +1,23 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { LoginAuthDto } from './dto/login-auth.dto';
+import { JwtService } from '@nestjs/jwt';
+import { StringValue } from 'ms';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
   async register(createAuthDto: CreateAuthDto) {
     const { password, email } = createAuthDto;
 
@@ -34,19 +45,50 @@ export class AuthService {
     });
   }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async login(loginAuthDto: LoginAuthDto) {
+    const { password, email } = loginAuthDto;
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+    if (!user) {
+      throw new NotFoundException('User not found!');
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    const pass = bcrypt.compareSync(password, user.password);
+
+    if (!pass) {
+      throw new UnauthorizedException('Invalid credentials!');
+    }
+
+    const payload = {
+      sub: user.id,
+      role: user.role,
+      jti: crypto.randomUUID(),
+    };
+
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_ACCESS_SECRET,
+      expiresIn: process.env.JWT_ACCESS_EXPIRES as StringValue,
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: process.env.JWT_REFRESH_EXPIRES as StringValue,
+    });
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        refreshToken,
+      },
+    });
+
+    return {
+      user: user.id,
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    };
   }
 }
