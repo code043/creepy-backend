@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -11,12 +12,14 @@ import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { StringValue } from 'ms';
 import * as crypto from 'crypto';
+import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private cloudinary: CloudinaryService,
   ) {}
   async register(createAuthDto: CreateAuthDto) {
     const { password, email } = createAuthDto;
@@ -175,6 +178,26 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found!');
     }
+
+    return user;
+  }
+  async uploadAvatar(userId: string, file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('File is required!');
+    }
+
+    const imageUrl = await this.cloudinary.uploadFile(file);
+
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        image: imageUrl,
+      },
+      select: {
+        id: true,
+        image: true,
+      },
+    });
 
     return user;
   }

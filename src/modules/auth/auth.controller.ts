@@ -6,6 +6,8 @@ import {
   UnauthorizedException,
   Get,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
@@ -14,10 +16,15 @@ import { LoginAuthDto } from './dto/login-auth.dto';
 import { Request } from 'express';
 import { Auth } from './decorators/auth.user.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private cloudinary: CloudinaryService,
+  ) {}
 
   @Post('register')
   create(@Body() createAuthDto: CreateAuthDto) {
@@ -40,7 +47,7 @@ export class AuthController {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Refresh token ausente');
+      throw new UnauthorizedException('Refresh token is missing!');
     }
 
     const refreshToken = authHeader.split(' ')[1];
@@ -56,5 +63,14 @@ export class AuthController {
   @Get('me')
   getMe(@Auth('id') id: string) {
     return this.authService.getAuthenticatedUser(id);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Post('me/avatar')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadAvatar(
+    @Auth('id') userId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.authService.uploadAvatar(userId, file);
   }
 }
