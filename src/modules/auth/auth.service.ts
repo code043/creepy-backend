@@ -150,4 +150,32 @@ export class AuthService {
       refresh_token: newRefreshToken,
     };
   }
+  async getAuthenticatedUser(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        image: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        posts: {
+          select: {
+            id: true,
+            title: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found!');
+    }
+
+    return user;
+  }
 }
