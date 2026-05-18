@@ -35,7 +35,18 @@ export class UsersService {
     return foundUser;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    try {
+      await this.prisma.user.delete({
+        where: { id },
+      });
+
+      return {
+        message: 'User deleted successfully!',
+        deletedId: id,
+      };
+    } catch {
+      throw new NotFoundException('User not found!');
+    }
   }
 }
