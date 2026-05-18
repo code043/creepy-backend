@@ -21,7 +21,6 @@ export class PostsService {
   async findAll() {
     return await this.prisma.post.findMany();
   }
-
   async findOne(id: string) {
     const post = await this.prisma.post.findFirst({
       where: { id },
