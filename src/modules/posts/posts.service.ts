@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -18,12 +18,18 @@ export class PostsService {
     });
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  async findAll() {
+    return await this.prisma.post.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
+  async findOne(id: string) {
+    const post = await this.prisma.post.findFirst({
+      where: { id },
+    });
+    if (!post) {
+      throw new NotFoundException('Note not found!');
+    }
+    return post;
   }
 
   remove(id: number) {
