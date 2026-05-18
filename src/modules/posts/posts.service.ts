@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -29,6 +30,24 @@ export class PostsService {
       throw new NotFoundException('Note not found!');
     }
     return post;
+  }
+  async update(id: string, updateNoteDto: UpdatePostDto, userId: string) {
+    const result = await this.prisma.post.updateMany({
+      where: {
+        id,
+        userId,
+      },
+      data: updateNoteDto,
+    });
+
+    if (result.count === 0) {
+      throw new NotFoundException('Note not found!');
+    }
+
+    return {
+      message: 'Note updated successfully!',
+      updatedId: id,
+    };
   }
 
   async remove(id: string) {
