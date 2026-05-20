@@ -47,12 +47,14 @@ export class PostsController {
   }
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
+  @UseInterceptors(FileInterceptor('file'))
   update(
     @Param('id') id: string,
     @Body() updateNoteDto: UpdatePostDto,
     @User() user: any,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.postsService.update(id, updateNoteDto, user.id);
+    return this.postsService.update(id, updateNoteDto, user.id, file);
   }
 
   @Delete(':id')

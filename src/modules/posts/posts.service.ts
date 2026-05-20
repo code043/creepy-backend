@@ -49,18 +49,31 @@ export class PostsService {
     }
     return post;
   }
-  async update(id: string, updateNoteDto: UpdatePostDto, userId: string) {
-    const result = await this.prisma.post.updateMany({
-      where: {
-        id,
-        userId,
-      },
-      data: updateNoteDto,
-    });
+  async update(
+    id: string,
+    updateNoteDto: UpdatePostDto,
+    userId: string,
+    file?: Express.Multer.File,
+  ) {
+    const post = await this.prisma.post.findFirst({ where: { id, userId } });
 
-    if (result.count === 0) {
+    if (!post) {
       throw new NotFoundException('Note not found!');
     }
+
+    let imageUrl = post.image;
+
+    if (file) {
+      imageUrl = await this.cloudinary.uploadFile(file);
+    }
+
+    await this.prisma.post.update({
+      where: { id },
+      data: {
+        ...updateNoteDto,
+        image: imageUrl,
+      },
+    });
 
     return {
       message: 'Note updated successfully!',
