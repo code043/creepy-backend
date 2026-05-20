@@ -32,9 +32,13 @@ export class PostsController {
   ) {
     return this.postsService.create(userId, dto, file);
   }
-
+  @UseGuards(AuthGuard('jwt'))
   @Get()
-  findAll() {
+  findAllUserPosts(@Auth('id') userId: string) {
+    return this.postsService.findAllUserPosts(userId);
+  }
+  @Get('all')
+  fintAll() {
     return this.postsService.findAll();
   }
   @Get(':id')

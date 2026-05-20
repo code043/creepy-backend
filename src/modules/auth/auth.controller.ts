@@ -17,14 +17,10 @@ import { Request } from 'express';
 import { Auth } from './decorators/auth.user.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private cloudinary: CloudinaryService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   create(@Body() createAuthDto: CreateAuthDto) {

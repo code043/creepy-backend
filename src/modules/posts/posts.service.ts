@@ -32,6 +32,11 @@ export class PostsService {
     });
   }
 
+  async findAllUserPosts(userId: string) {
+    return await this.prisma.post.findMany({
+      where: { userId },
+    });
+  }
   async findAll() {
     return await this.prisma.post.findMany();
   }

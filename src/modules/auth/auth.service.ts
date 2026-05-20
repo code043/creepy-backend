@@ -32,7 +32,7 @@ export class AuthService {
       throw new ConflictException('Email already exists!');
     }
 
-    const hashedPassword = bcrypt.hashSync(password, Number('10'));
+    const hashedPassword = bcrypt.hashSync(password, Number(process.env.SALT));
 
     return this.prisma.user.create({
       data: {
