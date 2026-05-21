@@ -37,8 +37,23 @@ export class PostsService {
       where: { userId },
     });
   }
-  async findAll() {
-    return await this.prisma.post.findMany();
+  async pagination(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+
+    const posts = await this.prisma.post.findMany({
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const total = await this.prisma.post.count();
+
+    return {
+      data: posts,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit),
+    };
   }
   async findOne(id: string) {
     const post = await this.prisma.post.findFirst({
