@@ -44,7 +44,11 @@ export class PostsController {
     @Query('limit') limit = 10,
     @Query('search') search = '',
   ) {
-    return this.postsService.pagination(Number(page), Number(limit), search);
+    return this.postsService.paginationSearch(
+      Number(page),
+      Number(limit),
+      search,
+    );
   }
   @Get('id/:id')
   findOne(@Param('id') id: string) {

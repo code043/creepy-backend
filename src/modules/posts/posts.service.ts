@@ -38,9 +38,32 @@ export class PostsService {
       where: { userId },
     });
   }
+  async pagination(page: number, limit: number) {
+    const safePage = Number(page) || 1;
+    const safeLimit = Number(limit) || 10;
+    const skip = (safePage - 1) * safeLimit;
 
-  async pagination(page: number, limit: number, search: string) {
-    const skip = (page - 1) * limit;
+    const posts = await this.prisma.post.findMany({
+      skip,
+      take: safeLimit,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const total = await this.prisma.post.count();
+
+    return {
+      data: posts,
+      total,
+      page: safePage,
+      lastPage: Math.ceil(total / safeLimit),
+    };
+  }
+
+  async paginationSearch(page = 1, limit = 5, search = '') {
+    const safePage = Number(page) || 1;
+    const safeLimit = Number(limit) || 5;
+
+    const skip = (safePage - 1) * safeLimit;
 
     const where: Prisma.PostWhereInput = search
       ? {
@@ -48,13 +71,13 @@ export class PostsService {
             {
               title: {
                 contains: search,
-                mode: 'insensitive',
+                mode: Prisma.QueryMode.insensitive,
               },
             },
             {
               description: {
                 contains: search,
-                mode: 'insensitive',
+                mode: Prisma.QueryMode.insensitive,
               },
             },
           ],
@@ -64,7 +87,7 @@ export class PostsService {
     const posts = await this.prisma.post.findMany({
       where,
       skip,
-      take: limit,
+      take: safeLimit,
       orderBy: { createdAt: 'desc' },
     });
 
@@ -73,8 +96,8 @@ export class PostsService {
     return {
       data: posts,
       total,
-      page,
-      lastPage: Math.ceil(total / limit),
+      page: safePage,
+      lastPage: Math.ceil(total / safeLimit),
     };
   }
   async findOne(id: string) {
