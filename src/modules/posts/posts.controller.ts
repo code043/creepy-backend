@@ -41,9 +41,14 @@ export class PostsController {
   fintAll() {
     return this.postsService.findAll();
   }
-  @Get(':id')
+  @Get('id/:id')
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
+  }
+  @Get('slug/:slug')
+  findBySlug(@Param('slug') slug: string) {
+    console.log(slug);
+    return this.postsService.findBySlug(slug);
   }
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')

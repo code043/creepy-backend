@@ -45,7 +45,16 @@ export class PostsService {
       where: { id },
     });
     if (!post) {
-      throw new NotFoundException('Note not found!');
+      throw new NotFoundException('Post not found!');
+    }
+    return post;
+  }
+  async findBySlug(slug: string) {
+    const post = await this.prisma.post.findUnique({
+      where: { slug },
+    });
+    if (!post) {
+      throw new NotFoundException('Post not found!');
     }
     return post;
   }
@@ -58,7 +67,7 @@ export class PostsService {
     const post = await this.prisma.post.findFirst({ where: { id, userId } });
 
     if (!post) {
-      throw new NotFoundException('Note not found!');
+      throw new NotFoundException('Post not found!');
     }
 
     let imageUrl = post.image;
@@ -76,7 +85,7 @@ export class PostsService {
     });
 
     return {
-      message: 'Note updated successfully!',
+      message: 'Post updated successfully!',
       updatedId: id,
     };
   }
@@ -86,7 +95,7 @@ export class PostsService {
       where: { id },
     });
     if (!post) {
-      throw new NotFoundException('Note not found!');
+      throw new NotFoundException('Post not found!');
     }
     await this.prisma.post.delete({
       where: { id },
