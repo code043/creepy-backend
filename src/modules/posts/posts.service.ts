@@ -3,6 +3,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PostsService {
@@ -37,16 +38,37 @@ export class PostsService {
       where: { userId },
     });
   }
-  async pagination(page: number, limit: number) {
+
+  async pagination(page: number, limit: number, search: string) {
     const skip = (page - 1) * limit;
 
+    const where: Prisma.PostWhereInput = search
+      ? {
+          OR: [
+            {
+              title: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              description: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        }
+      : {};
+
     const posts = await this.prisma.post.findMany({
+      where,
       skip,
       take: limit,
       orderBy: { createdAt: 'desc' },
     });
 
-    const total = await this.prisma.post.count();
+    const total = await this.prisma.post.count({ where });
 
     return {
       data: posts,

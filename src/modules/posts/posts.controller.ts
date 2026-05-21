@@ -39,8 +39,12 @@ export class PostsController {
     return this.postsService.findAllUserPosts(userId);
   }
   @Get('all')
-  findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
-    return this.postsService.pagination(Number(page), Number(limit));
+  findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('search') search = '',
+  ) {
+    return this.postsService.pagination(Number(page), Number(limit), search);
   }
   @Get('id/:id')
   findOne(@Param('id') id: string) {
