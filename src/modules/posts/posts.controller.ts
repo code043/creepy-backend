@@ -19,6 +19,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Auth } from '../auth/decorators/auth.user.decorator';
 import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
+import { LatestPostsDto } from './dto/latest-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -54,6 +55,10 @@ export class PostsController {
       Number(limit),
       search,
     );
+  }
+  @Get('latest')
+  async getLatest(@Query() query: LatestPostsDto) {
+    return this.postsService.getLatestPosts(query.limit ?? 12);
   }
   @Get('id/:id')
   findOne(@Param('id') id: string) {

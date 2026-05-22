@@ -90,6 +90,14 @@ export class PostsService {
       lastPage: Math.ceil(total / safeLimit),
     };
   }
+  async getLatestPosts(limit: number) {
+    return this.prisma.post.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: limit,
+    });
+  }
   async findOne(id: string) {
     const post = await this.prisma.post.findFirst({
       where: { id },
