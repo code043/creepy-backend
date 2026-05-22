@@ -39,7 +39,7 @@ model Post {
   title       String
   image       String?
   description String
-  content     String
+  content     Json
   slug        String   @unique
   userId      String   @map("user_id")
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)

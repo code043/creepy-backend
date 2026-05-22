@@ -18,20 +18,25 @@ import { AuthGuard } from '@nestjs/passport';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Auth } from '../auth/decorators/auth.user.decorator';
+import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(
+    private readonly postsService: PostsService,
+    private cloudinary: CloudinaryService,
+  ) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Post('new')
+  create(@Auth('id') userId: string, @Body() dto: CreatePostDto) {
+    return this.postsService.create(userId, dto);
+  }
+  @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  async createPost(
-    @Auth('id') userId: string,
-    @UploadedFile() file: Express.Multer.File,
-    @Body() dto: CreatePostDto,
-  ) {
-    return this.postsService.create(userId, dto, file);
+  async upload(@UploadedFile() file: Express.Multer.File) {
+    const url = await this.cloudinary.uploadFile(file);
+    return { url };
   }
   @UseGuards(AuthGuard('jwt'))
   @Get()

@@ -11,28 +11,18 @@ export class PostsService {
     private prisma: PrismaService,
     private cloudinary: CloudinaryService,
   ) {}
-  async create(
-    userId: string,
-    createPostDto: CreatePostDto,
-    file?: Express.Multer.File,
-  ) {
-    let imageUrl: string | null = null;
-
-    if (file) {
-      imageUrl = await this.cloudinary.uploadFile(file);
-    }
-    return await this.prisma.post.create({
+  async create(userId: string, dto: CreatePostDto) {
+    return this.prisma.post.create({
       data: {
-        title: createPostDto.title,
-        content: createPostDto.content,
-        description: createPostDto.description,
-        slug: createPostDto.slug,
-        image: imageUrl,
-        userId: userId,
+        title: dto.title,
+        description: dto.description,
+        content: dto.content,
+        slug: dto.slug,
+        image: dto.image,
+        userId,
       },
     });
   }
-
   async findAllUserPosts(userId: string) {
     return await this.prisma.post.findMany({
       where: { userId },
