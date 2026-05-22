@@ -41,6 +41,7 @@ model Post {
   description String
   content     Json
   slug        String   @unique
+  views       Int      @default(0)
   userId      String   @map("user_id")
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now()) @map("created_at")

@@ -108,6 +108,16 @@ export class PostsService {
     }
     return post;
   }
+  async incrementViews(slug: string) {
+    return this.prisma.post.update({
+      where: { slug },
+      data: {
+        views: {
+          increment: 1,
+        },
+      },
+    });
+  }
   async update(
     id: string,
     updateNoteDto: UpdatePostDto,

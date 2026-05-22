@@ -10,7 +10,7 @@ export class CloudinaryService {
     return new Promise((resolve, reject) => {
       const stream = this.cloudinary.uploader.upload_stream(
         {
-          folder: 'users',
+          folder: 'posts',
         },
         (error, result) => {
           if (result) resolve(result.secure_url);

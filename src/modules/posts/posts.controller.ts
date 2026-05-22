@@ -63,6 +63,10 @@ export class PostsController {
   findBySlug(@Param('slug') slug: string) {
     return this.postsService.findBySlug(slug);
   }
+  @Post(':slug/view')
+  incrementView(@Param('slug') slug: string) {
+    return this.postsService.incrementViews(slug);
+  }
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   @UseInterceptors(FileInterceptor('file'))
