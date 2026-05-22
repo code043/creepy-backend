@@ -35,19 +35,37 @@ model User {
 }
 
 model Post {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   title       String
   image       String?
   description String
   content     Json
-  slug        String   @unique
-  views       Int      @default(0)
-  userId      String   @map("user_id")
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt() @map("updated_at")
+  slug        String  @unique
+  views       Int     @default(0)
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  categoryId String?   @map("category_id")
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt() @map("updated_at")
 
   @@index([userId])
   @@index([slug])
+  @@index([categoryId])
   @@map("posts")
+}
+
+model Category {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+
+  posts Post[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("categories")
 }
