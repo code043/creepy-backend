@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:20
 
 WORKDIR /app
 
@@ -7,12 +7,9 @@ RUN npm ci
 
 COPY . .
 
-RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate --schema=prisma/schema.prisma
+RUN npx prisma generate
+RUN npm run build
 
-RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npm run build
+EXPOSE 3000
 
-RUN ls -la dist/
-
-EXPOSE 8080
-
-CMD ["node", "dist/main"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
