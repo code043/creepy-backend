@@ -62,13 +62,13 @@ export class PostsService {
             {
               title: {
                 contains: search,
-                mode: Prisma.QueryMode.insensitive,
+                mode: 'insensitive',
               },
             },
             {
               description: {
                 contains: search,
-                mode: Prisma.QueryMode.insensitive,
+                mode: 'insensitive',
               },
             },
           ],
