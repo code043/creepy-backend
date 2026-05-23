@@ -8,7 +8,7 @@ RUN npm ci
 COPY . .
 
 RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate --schema=prisma/schema.prisma
-RUN npm run build
+RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npm run build
 
 FROM node:20-alpine AS runner
 
