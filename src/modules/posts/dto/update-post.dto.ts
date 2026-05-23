@@ -1,5 +1,4 @@
-import { IsString, MinLength, IsOptional } from 'class-validator';
-
+import { IsString, MinLength, IsOptional, IsNotEmpty } from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
 import { CreatePostDto } from './create-post.dto';
 
@@ -13,13 +12,16 @@ export class UpdatePostDto extends PartialType(CreatePostDto) {
   image?: string;
 
   @IsString()
-  @MinLength(30)
+  @MinLength(10)
   description!: string;
 
-  @IsString()
-  @MinLength(10)
-  content!: string;
+  @IsNotEmpty()
+  content!: any;
 
   @IsString()
   slug!: string;
+
+  @IsString()
+  @IsOptional()
+  categoryId?: string;
 }

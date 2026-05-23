@@ -20,6 +20,7 @@ export class PostsService {
         slug: dto.slug,
         image: dto.image,
         userId,
+        ...(dto.categoryId && { categoryId: dto.categoryId }),
       },
     });
   }
