@@ -24,7 +24,13 @@ export class CategoriesService {
   }
 
   async findAll() {
-    return await this.prisma.category.findMany();
+    return await this.prisma.category.findMany({
+      include: {
+        _count: {
+          select: { posts: true },
+        },
+      },
+    });
   }
 
   async findOneBySlug(slug: string) {
@@ -46,12 +52,37 @@ export class CategoriesService {
     return category;
   }
   async getPostsByCategory(slug: string) {
-    return await this.prisma.post.findMany({
-      where: {
-        category: { slug },
-      },
-      orderBy: { createdAt: 'desc' },
+    // return await this.prisma.post.findMany({
+    //   where: {
+    //     category: { slug },
+    //   },
+    //   orderBy: { createdAt: 'desc' },
+    // });
+    const category = await this.prisma.category.findUnique({
+      where: { slug },
     });
+
+    if (!category) {
+      throw new NotFoundException('Category not found!');
+    }
+    const [posts, total] = await Promise.all([
+      this.prisma.post.findMany({
+        where: {
+          category: { slug },
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.post.count({
+        where: {
+          category: { slug },
+        },
+      }),
+    ]);
+
+    return {
+      data: posts,
+      total,
+    };
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
