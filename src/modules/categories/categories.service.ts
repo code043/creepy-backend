@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -27,8 +27,23 @@ export class CategoriesService {
     return await this.prisma.category.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOneBySlug(slug: string) {
+    const category = await this.prisma.category.findUnique({
+      where: { slug },
+    });
+    if (!category) {
+      throw new NotFoundException('Category not found!');
+    }
+    return category;
+  }
+  async findOneById(id: string) {
+    const category = await this.prisma.category.findUnique({
+      where: { id },
+    });
+    if (!category) {
+      throw new NotFoundException('Category not found!');
+    }
+    return category;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

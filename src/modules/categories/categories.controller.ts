@@ -42,9 +42,13 @@ export class CategoriesController {
     return this.categoriesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoriesService.findOne(+id);
+  @Get('id/:id')
+  findOneById(@Param('id') id: string) {
+    return this.categoriesService.findOneById(id);
+  }
+  @Get('slug/:slug')
+  findOneBySlug(@Param('slug') slug: string) {
+    return this.categoriesService.findOneBySlug(slug);
   }
 
   @Patch(':id')
