@@ -8,6 +8,7 @@ import {
   Delete,
   UploadedFile,
   UseInterceptors,
+  Query,
   // UseGuards,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
@@ -37,9 +38,19 @@ export class CategoriesController {
     return { url };
   }
 
-  @Get()
-  findAll() {
-    return this.categoriesService.findAll();
+  @Get(':slug/posts')
+  getAll(
+    @Param('slug') slug: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 6,
+    @Query('search') search = '',
+  ) {
+    return this.categoriesService.paginationSearchByCategory(
+      slug,
+      page,
+      limit,
+      search,
+    );
   }
 
   @Get('id/:id')
@@ -54,7 +65,6 @@ export class CategoriesController {
   getPostsByCategory(@Param('slug') slug: string) {
     return this.categoriesService.getPostsByCategory(slug);
   }
-
   @Patch(':id')
   update(
     @Param('id') id: string,
