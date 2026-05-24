@@ -6,11 +6,14 @@ import * as streamifier from 'streamifier';
 export class CloudinaryService {
   constructor(@Inject('CLOUDINARY') private cloudinary: typeof Cloudinary) {}
 
-  async uploadFile(file: Express.Multer.File): Promise<string> {
+  async uploadFile(
+    file: Express.Multer.File,
+    folder: string = 'posts',
+  ): Promise<string> {
     return new Promise((resolve, reject) => {
       const stream = this.cloudinary.uploader.upload_stream(
         {
-          folder: 'posts',
+          folder,
         },
         (error, result) => {
           if (result) resolve(result.secure_url);

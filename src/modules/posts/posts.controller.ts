@@ -36,7 +36,7 @@ export class PostsController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async upload(@UploadedFile() file: Express.Multer.File) {
-    const url = await this.cloudinary.uploadFile(file);
+    const url = await this.cloudinary.uploadFile(file, 'posts');
     return { url };
   }
   @UseGuards(AuthGuard('jwt'))
