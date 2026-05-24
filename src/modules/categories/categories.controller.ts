@@ -37,9 +37,13 @@ export class CategoriesController {
     const url = await this.cloudinary.uploadFile(file, 'categories');
     return { url };
   }
+  @Get()
+  getAll() {
+    return this.categoriesService.findAll();
+  }
 
   @Get(':slug/posts')
-  getAll(
+  getAllCategoryPosts(
     @Param('slug') slug: string,
     @Query('page') page = 1,
     @Query('limit') limit = 6,

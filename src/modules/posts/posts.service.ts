@@ -102,6 +102,15 @@ export class PostsService {
   async findOne(id: string) {
     const post = await this.prisma.post.findFirst({
       where: { id },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
     });
     if (!post) {
       throw new NotFoundException('Post not found!');
@@ -111,6 +120,15 @@ export class PostsService {
   async findBySlug(slug: string) {
     const post = await this.prisma.post.findUnique({
       where: { slug },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
     });
     if (!post) {
       throw new NotFoundException('Post not found!');
