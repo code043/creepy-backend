@@ -59,13 +59,23 @@ model Post {
 }
 
 model Category {
-  id   String @id @default(cuid())
-  name String
-  slug String @unique
+  id              String  @id @default(cuid())
+  name            String
+  description     String?
+  image           String?
+  color           String?
+  icon            String?
+  metaTitle       String?
+  metaDescription String?
+  isActive        Boolean @default(true)
+  isFeatured      Boolean @default(false)
+  order           Int     @default(0)
+  slug            String  @unique
 
   posts Post[]
 
   createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt() @map("updated_at")
 
   @@map("categories")
 }
