@@ -45,6 +45,14 @@ export class CategoriesService {
     }
     return category;
   }
+  async getPostsByCategory(slug: string) {
+    return await this.prisma.post.findMany({
+      where: {
+        category: { slug },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(id: number, updateCategoryDto: UpdateCategoryDto) {

@@ -50,6 +50,10 @@ export class CategoriesController {
   findOneBySlug(@Param('slug') slug: string) {
     return this.categoriesService.findOneBySlug(slug);
   }
+  @Get(':slug/posts')
+  getPostsByCategory(@Param('slug') slug: string) {
+    return this.categoriesService.getPostsByCategory(slug);
+  }
 
   @Patch(':id')
   update(
