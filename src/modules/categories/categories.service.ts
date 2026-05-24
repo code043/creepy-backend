@@ -52,12 +52,6 @@ export class CategoriesService {
     return category;
   }
   async getPostsByCategory(slug: string) {
-    // return await this.prisma.post.findMany({
-    //   where: {
-    //     category: { slug },
-    //   },
-    //   orderBy: { createdAt: 'desc' },
-    // });
     const category = await this.prisma.category.findUnique({
       where: { slug },
     });
@@ -69,6 +63,15 @@ export class CategoriesService {
       this.prisma.post.findMany({
         where: {
           category: { slug },
+        },
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          description: true,
+          image: true,
+          createdAt: true,
+          views: true,
         },
         orderBy: { createdAt: 'desc' },
       }),
