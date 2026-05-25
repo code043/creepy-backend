@@ -80,6 +80,9 @@ export class PostsService {
       skip,
       take: safeLimit,
       orderBy: { createdAt: 'desc' },
+      include: {
+        category: true,
+      },
     });
 
     const total = await this.prisma.post.count({ where });
