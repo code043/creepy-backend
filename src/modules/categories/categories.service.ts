@@ -147,6 +147,13 @@ export class CategoriesService {
         content: true,
         createdAt: true,
         views: true,
+        category: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+          },
+        },
       },
     });
 
