@@ -144,6 +144,7 @@ export class CategoriesService {
         title: true,
         description: true,
         image: true,
+        content: true,
         createdAt: true,
         views: true,
       },
