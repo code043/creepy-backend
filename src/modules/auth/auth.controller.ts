@@ -58,6 +58,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
   getMe(@Auth('id') id: string) {
+    console.log(id);
     return this.authService.getAuthenticatedUser(id);
   }
   @UseGuards(AuthGuard('jwt'))
