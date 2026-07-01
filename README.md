@@ -4,7 +4,9 @@ API REST para gerenciamento de posts, usuários e comentários de um blog focado
 
 ## Getting Started
 
+
 ### Requirements
+
 
 - Vscode
 - Node
